@@ -7,20 +7,26 @@
 
 * Requires [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-container-toolkit) to build for GPU support
 * Current containers built for CUDA Version 12.3.  You may need to modify source image to match CUDA version to your GPU supported version (i.e 12.3, 12.4, etc..)
+* Graphcast untested because of lack of access to GPU with proper memory
+* GPU Memory Requirements:
+    * FourCastNet GPU ~ 12 GB
+    * PanguWeather ~ 32 GB
+    * Graphcast 0.25 Degree ~ 40 GB 
+    * Graphcast 1.0 Degree ~ 32 GB
 
 ## Build container for FourCastNet and PanguWeather
 
 ```
-docker build --rm --pull -t ai-models - < Dockerfile.ai-models
+docker build --rm --pull -t ai-models - < ai-models.Dockerfile
 ```
 
 ## Build container for Graphcast
 
 ```
-docker build --rm --pull -t ai-models-graphcast - < Dockerfile.ai-models-gc
+docker build --rm --pull -t ai-models-graphcast - < graphcast.Dockerfile
 ```
 
-## Example running FourCastNet using ECMWF CDS for datasource:
+## Example running FourCastNet using ECMWF CDS for initial conditions:
 
 *(modify paths to assets, outputs, and cdsapirc file to your environment)*
 ```
@@ -28,9 +34,25 @@ docker run --rm -it -e AI_MODELS_ASSETS=/assets/ -v /home/user/ai-models/assets/
 
 ```
 
+## Example running FourCastNet using GFS for initial conditions:
+
+*(modify paths to assets, outputs, and cdsapirc file to your environment)*
+```
+docker run --rm -it -e AI_MODELS_ASSETS=/assets/ -v /home/user/ai-models/assets/:/assets -v /home/user/ai-models/output/:/output -v /home/user/.cdsapirc:/root/.cdsapirc --gpus all ai-models:latest ai-models-gfs --download-assets --input gfs --assets-sub-directory --date 20240713 --path /output/output-{step}.grb fourcastnetv2-small
+
+```
+
+## Example running Graphcast at 1 degree resolution using GFS for initial conditions:
+
+*(modify paths to assets, outputs, and cdsapirc file to your environment)*
+```
+docker run --rm -it -e AI_MODELS_ASSETS=/assets/ -v /home/user/ai-models/assets/:/assets -v /home/user/ai-models/output/:/output -v /home/user/.cdsapirc:/root/.cdsapirc --gpus all ai-models-graphcast:latest ai-models-gfs --download-assets --input gfs --assets-sub-directory --date 20240713 --path /output/output-{step}.grb --onedeg graphcast
+
+```
+
 ## To Do
 
-- [ ] Add GFS input
+- [x] Add GFS input
 
 ## Disclaimer
 
