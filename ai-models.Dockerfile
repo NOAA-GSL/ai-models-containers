@@ -27,6 +27,7 @@ RUN apt update && \
 # Force GPU Runtime with env variable
 ENV ONNXRUNTIME=onnxruntime-gpu
 RUN pip3 --no-cache-dir install \
-        torch onnxruntime-gpu ai-models ai-models-panguweather \
-        ai-models-fourcastnet ai-models-fourcastnetv2 zarr \
-        ai-models-gfs==0.0.8 
+        torch onnxruntime-gpu ai-models ai-models-gfs \
+        ai-models-panguweather ai-models-panguweather-gfs \
+        ai-models-fourcastnetv2 ai-models-fourcastnetv2-gfs zarr 
+
